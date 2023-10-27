@@ -1,11 +1,10 @@
 # watch
-watch
+Developed for linux
 
 # Requirements
 1. This tool need to install ```MongoDB``` on local
 2. Need to install ```(subfinder - httpx - JQuery)```
-3. Developed for linux
-4. ```pip3 install -r requirements.txt```
+3. ```pip3 install -r requirements.txt```
 
 # Work Flow
 ```python3 main.py```
