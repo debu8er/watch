@@ -7,7 +7,7 @@ watch
 3. Developed for linux
 
 # Work Flow
-python3 main.py
+```python3 main.py```
 
 # Update to last version
-python3 update.py
+```python3 update.py```
