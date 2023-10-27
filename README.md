@@ -2,7 +2,7 @@
 watch
 
 # Requirements
-1. This tools need to install ```MongoDB`` on local
+1. This tools need to install ```MongoDB``` on local
 2. Need to install ```(subfinder - httpx - JQuery)```
 3. Developed for linux
 
