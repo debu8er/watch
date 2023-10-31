@@ -7,14 +7,15 @@
 </p>
 
 watch is a tool for watching subdomain and save details in database(MongoDB)
--- sds
+
 ## Installation
-```bash
-git clone https://debu8er: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@github.com/debu8er/watch.git
-cd watch
-pip install -r requirements.txt
-python3 main.py
-```
+* install MongoDB on local
+* ```bash
+  git clone https://debu8er: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@github.com/debu8er/watch.git
+  cd watch
+  pip install -r requirements.txt
+  python3 main.py
+  ```
 
 ### Tool Options
 * `sub` : It show subdomain
