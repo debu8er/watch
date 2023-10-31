@@ -9,7 +9,7 @@
 watch is a tool for watching subdomain and save details in database(MongoDB)
 
 ## Installation
-* install MongoDB on local
+* install MongoDB on local https://www.mongodb.com/docs/manual/installation/
 * ```bash
   git clone https://debu8er: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@github.com/debu8er/watch.git
   cd watch
