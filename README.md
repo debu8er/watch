@@ -1,4 +1,4 @@
-<h1 align="center">BackupKiller</h1>
+<h1 align="center">watch</h1>
 <p align="center">
   <a href="#installation">Installation</a> •
   <a href="#tool-options">Tool options</a> •
@@ -6,7 +6,7 @@
   <a href="#license">License</a>
 </p>
 
-BackupKiller is a tool to generate wordlist based on the URLs to check for backup, installation, etc files.
+watch is a tool for watching subdomain and save details in database(MongoDB)
 
 ## Installation
 ```bash
