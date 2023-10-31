@@ -1,13 +1,38 @@
-# watch
-Developed for linux
+<h1 align="center">BackupKiller</h1>
+<p align="center">
+  <a href="#installation">Installation</a> •
+  <a href="#tool-options">Tool options</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#license">License</a>
+</p>
 
-# Requirements
-1. This tool need to install ```MongoDB``` on local
-2. Need to install ```(subfinder - httpx - JQuery)```
-3. ```pip3 install -r requirements.txt```
+BackupKiller is a tool to generate wordlist based on the URLs to check for backup, installation, etc files.
 
-# Work Flow
-```python3 main.py```
+## Installation
+```bash
+git clone https://debu8er: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@github.com/debu8er/watch.git
+cd watch
+pip install -r requirements.txt
+python3 main.py
+```
 
-# Update to last version
-```python3 update.py```
+### Tool Options
+* `sub` : It show subdomain
+* `status` : It show subdomain statuses
+* `tech` : It show subdomain technology
+* `status_changed` : The statuses that show changing
+* `tech_changed` : The technologies that show changing
+* `fresh` : This will be true if it is a new subdomain
+* `timestamp` : Time of first subdomain registration
+
+
+
+## Usage
+Simple usage:
+```bash
+python3 main.py
+```
+
+
+## License
+This project is licensed under the MIT license. See the LICENSE file for details.
