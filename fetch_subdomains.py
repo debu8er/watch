@@ -1,11 +1,14 @@
 import os
 import requests
 import re
+from database import initialize_mongo_collection
 
 def fetch_subdomains(domain):
     # Fetch subdomains from different sources
     crtsh_subdomains = fetch_crtsh_subdomains(domain)
     abuseipdb_subdomains = fetch_abuseipdb_subdomains(domain)
+    subfinder = fetch_subfinder_subdomains(domain)
+    # dnsbrute = fetch_dnsbrute_subdomains(domain)
     
     # Combine subdomains from different sources
     all_subdomains = crtsh_subdomains + abuseipdb_subdomains
@@ -44,33 +47,66 @@ def fetch_abuseipdb_subdomains(domain):
         print(f"An error occurred during AbuseIPDB request: {e}")
         return []
 
-def merge_and_sort_files(subfinder, crtabuse, allsub):
+def fetch_subfinder_subdomains(domain):
     try:
-        with open(subfinder, 'r') as file1, open(crtabuse, 'r') as file2, open(allsub, 'w') as output:
-            lines = set(file1.readlines() + file2.readlines())
-            output.writelines(sorted(lines))
+        os.system(f'subfinder -all -d {domain} -silent > {domain}-subfinder')
+
     except IOError as e:
         print(f"An error occurred during file merging/sorting: {e}")
 
+
+def run_alterx_dnsx(domain):
+    try:
+        collection = initialize_mongo_collection(domain)
+
+        alterx_sub = (f'{domain}-alterx-allsub')
+        result = list(collection.find({}))
+
+        if len(result) != 0:
+            with open(alterx_sub,'w') as f:
+                for i in collection.find({}):
+                    f.writelines(('%s\n' % i["sub"]))
+            command = f"cat {alterx_sub} | alterx -silent | dnsx -silent > {domain}-dnsbrute"
+            os.system(command)
+        
+        else:
+            return False
+    except IOError as e:
+        print(f"An error occurred during file merging/sorting: {e}")
+
+
+def merge_and_sort_files(domain, subfinder, crtabuse, dnsbrute, allsub):
+    try:
+        with open(subfinder, 'r') as file1, open(crtabuse, 'r') as file2, open(allsub, 'w') as output:
+            
+            lines = set(file1.readlines() + file2.readlines())
+            
+            if run_alterx_dnsx(domain):
+                with open(dnsbrute, 'r') as file3:
+                    lines.update(file3.readlines())
+            
+            output.writelines(sorted(lines))
+    
+    except IOError as e:
+        print(f"An error occurred during file merging/sorting: {e}")
+
+
 def save_subdomains_to_file(domain, subdomains):
     try:
-        subdomains_file = f'{domain.split(".")[0]}-crtabuse'
+        subdomains_file = f'{domain}-crtabuse'
 
         with open(subdomains_file, 'w') as file:
             file.writelines([subdomain + '\n' for subdomain in subdomains])
 
-        # Additional steps (subfinder and httpx) can be added here if needed
-        os.system(f'subfinder -all -d {domain} -silent > {domain.split(".")[0]}-subfinder')
+        subfinder = f'{domain}-subfinder'
+        crtabuse = f'{domain}-crtabuse'
+        dnsbrute = f'{domain}-dnsbrute'
+        allsub = f'{domain}-allsub'
 
-        subfinder = f'{domain.split(".")[0]}-subfinder'
-        crtabuse = f'{domain.split(".")[0]}-crtabuse'
-        allsub = f'{domain.split(".")[0]}-allsub'
-
-        merge_and_sort_files(subfinder, crtabuse, allsub)
-        os.system(f'httpx -l {domain.split(".")[0]}-allsub -sc -td -silent -json > {domain.split(".")[0]}-json')
+        merge_and_sort_files(domain, subfinder, crtabuse, dnsbrute, allsub)
+        os.system(f'httpx -l {domain}-allsub -sc -td -silent -json > {domain}-json')
     except Exception as e:
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    domain = "dicardo.com"  # Replace with the desired domain
     fetch_subdomains(domain)
