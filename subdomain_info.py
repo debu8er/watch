@@ -1,80 +1,78 @@
 import json
 import os
-import asyncio
 from datetime import datetime, timedelta
-from pymongo import MongoClient
-import threading
-
+from database import send_data_to_discord
+from pymongo import MongoClient, UpdateOne, InsertOne
 
 def add_subdomains_to_mongo(col, domain):
-    subdomain_file = f"{domain.split('.')[0]}-allsub"
+    subdomain_file = f"{domain}-allsub"
     if os.path.exists(subdomain_file):
         with open(subdomain_file, 'r') as f:
-            fresh = False if col.count_documents({}) < 1 else "ready"
-                
+            fresh = "ready" if col.count_documents({}) > 0 else False
+            bulk_operations = []
+
             for subdomain in f:
                 subdomain = subdomain.strip()
-                existing_subdomain = col.find_one({"sub": subdomain})
-                if not existing_subdomain:
-                    final = {
+                if not col.find_one({"sub": subdomain}):
+                    document = {
                         "sub": subdomain,
                         "status": None,
                         "tech": None,
                         "fresh": fresh,
                         "status_changed": False,
                         "tech_changed": False,
-                        "timestamp": datetime.utcnow()
+                        "createdAt": datetime.utcnow(),
+                        "updatedAt": datetime.utcnow()  # Initialize the updatedAt field
                     }
-                    col.insert_one(final)
+                    bulk_operations.append(InsertOne(document))
+                    send_data_to_discord(subdomain)
+
+            if bulk_operations:
+                col.bulk_write(bulk_operations)
 
 def extract_fields(line):
     parsed_data = json.loads(line)
-
     input_value = parsed_data.get("input")
     status_code = parsed_data.get("status_code")
     tech_used = parsed_data.get("tech", None)
     tech_used_str = ', '.join(tech_used) if tech_used else None
-
     return input_value, status_code, tech_used_str
 
 def update_subdomain_info(col, domain):
-    filename = f'{domain.split(".")[0]}-json'
+    filename = f'{domain}-json'
     if os.path.exists(filename):
         with open(filename, 'r') as f:
+            bulk_operations = []
+
             for line in f:
                 query, status, tech = extract_fields(line)
-
                 existing_subdomain = col.find_one({"sub": query})
+
                 if existing_subdomain:
-                    existing_fresh = existing_subdomain["fresh"]
                     existing_status = existing_subdomain["status"]
                     existing_tech = existing_subdomain["tech"]
 
-                    if existing_fresh == "ready":
-                        col.update_one({"sub": query}, {"$set": {"fresh": True}})
-
-                    if status != existing_status:
-                        col.update_one({"sub": query}, {"$set": {"status": status, "status_changed": f"{existing_status}:{status}"}})
-                    else:
-                        col.update_one({"sub": query}, {"$set": {"status": status}})
+                    update_data = {}
 
                     if tech != existing_tech:
-                        col.update_one({"sub": query}, {"$set": {"tech": tech, "tech_changed": f"{existing_tech}:{tech}"}})
-                    else:
-                        col.update_one({"sub": query}, {"$set": {"tech": tech}})
+                        update_data["tech"] = tech
+                        update_data["tech_changed"] = f"{existing_tech}:{tech}"
+                    if status != existing_status:
+                        update_data["status"] = status
+                        update_data["status_changed"] = f"{existing_status}:{status}"
 
-async def update_fresh_after_two_days(col, subdomain_id, field_name):
-    await asyncio.sleep(24 * 60 * 60 * 2)  # Sleep for two days
-    col.update_one({"_id": subdomain_id}, {"$set": {field_name: False}})
+                    if update_data:
+                        update_data["updatedAt"] = datetime.utcnow()
+                        bulk_operations.append(
+                            UpdateOne({"sub": query}, {"$set": update_data})
+                        )
+
+            if bulk_operations:
+                col.bulk_write(bulk_operations)
 
 def set_stale_subdomains(col, field_name):
-    stale_subdomains = col.find({field_name: {"$ne": False}})
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
-    update_tasks = [update_fresh_after_two_days(col, subdomain["_id"], field_name) for subdomain in stale_subdomains]
-
-    if update_tasks:
-        loop.run_until_complete(asyncio.gather(*update_tasks))
-
-    loop.close()
+    two_days_ago = datetime.utcnow() - timedelta(days=2)
+    col.update_many(
+        {field_name: {"$ne": False}, "updatedAt": {"$lt": two_days_ago}},
+        {"$set": {field_name: False}}
+    )
