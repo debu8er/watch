@@ -1,3 +1,4 @@
 GitPython==3.1.40
-pymongo==4.5.0
-Requests==2.31.0
+pymongo==4.3.3
+python-dotenv==1.0.1
+Requests==2.32.3
