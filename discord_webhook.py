@@ -18,6 +18,3 @@ def send_data_to_discord(sub):
     except Exception as e:
         print(f"Error sending new subdomain: {e}")
         return None
-
-# Example usage
-send_data_to_discord("newsub.example.com")

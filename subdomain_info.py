@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime, timedelta
-from database import send_data_to_discord
+from database import send_data_to_discord, send_data_to_telegram
 from pymongo import MongoClient, UpdateOne, InsertOne
 
 def add_subdomains_to_mongo(col, domain):
@@ -26,7 +26,8 @@ def add_subdomains_to_mongo(col, domain):
                     }
                     bulk_operations.append(InsertOne(document))
                     if fresh == "ready":
-                        send_data_to_discord(subdomain)
+                        # send_data_to_discord(subdomain)
+                        send_data_to_telegram(subdomain)
 
             if bulk_operations:
                 col.bulk_write(bulk_operations)

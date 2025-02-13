@@ -72,7 +72,7 @@ def main():
         # Start threads for new domains
         for domain in domains_to_add:
             stop_flag = threading.Event()
-            thread = threading.Thread(target=watch_for_domain, args=(domain, 60 * 60, stop_flag))
+            thread = threading.Thread(target=watch_for_domain, args=(domain, 60, stop_flag))
             thread.daemon = True
             thread.start()
             monitored_domains[domain] = (thread, stop_flag)  # Add the domain, thread, and stop flag to the dictionary

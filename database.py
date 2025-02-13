@@ -9,6 +9,10 @@ load_dotenv()
 BASE_URL = os.getenv('BASE_URL')
 MY_DB = os.getenv('MY_DB')
 WEBHOOK_URL = os.getenv('WEBHOOK_URL')
+TEL_TOKEN = os.getenv('TEL_TOKEN')
+TEL_CHANELL_ID = os.getenv('TEL_CHANELL_ID')
+
+
 
 
 def initialize_mongo_collection(domain):
@@ -27,9 +31,37 @@ def fetch_domains_from_mongodb():
 
 def send_data_to_discord(sub):
     webhook_url = WEBHOOK_URL
+    
     data = {
-        "username": "Webhook Name",
-        "content": f"{sub}"
+        "username": "Subdomain Alert",
+        "embeds": [
+            {
+                "title": "New Subdomain Detected",
+                "description": f"A new subdomain has been detected: `{sub}`",
+                "color": 65280,  # Green color
+            }
+        ]
     }
+    try:
+        response = requests.post(webhook_url, json=data)
+    except Exception as e:
+        print(f"Error sending new subdomain: {e}")
+        return None
 
-    response = requests.post(webhook_url, json=data)
+
+def send_data_to_telegram(sub):
+    bot_token = TEL_TOKEN
+    chat_id = TEL_CHANELL_ID
+    message = f"🚨 New Subdomain Detected:\n`{sub}`"
+
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    data = {
+        "chat_id": chat_id,
+        "text": message,
+        "parse_mode": "Markdown",
+    }
+    
+    try:
+        response = requests.post(url, json=data)
+    except Exception as e:
+        print(f"Error sending message to Telegram: {e}")
