@@ -25,7 +25,8 @@ def add_subdomains_to_mongo(col, domain):
                         "updatedAt": datetime.utcnow()  # Initialize the updatedAt field
                     }
                     bulk_operations.append(InsertOne(document))
-                    send_data_to_discord(subdomain)
+                    if fresh == "ready":
+                        send_data_to_discord(subdomain)
 
             if bulk_operations:
                 col.bulk_write(bulk_operations)
