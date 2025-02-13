@@ -44,8 +44,10 @@ def watch_for_domain(domain, interval, stop_flag):
         time.sleep(interval)
 
 def main():
+ 
     # Create a dictionary to store monitored domains and their corresponding threads
     monitored_domains = {}
+
 
     while True:
         # Fetch domain names from the 'domains' collection

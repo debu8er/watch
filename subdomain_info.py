@@ -5,7 +5,7 @@ from database import send_data_to_discord
 from pymongo import MongoClient, UpdateOne, InsertOne
 
 def add_subdomains_to_mongo(col, domain):
-    subdomain_file = f"{domain}-allsub"
+    subdomain_file = f"results/{domain}-allsub"
     if os.path.exists(subdomain_file):
         with open(subdomain_file, 'r') as f:
             fresh = "ready" if col.count_documents({}) > 0 else False
@@ -40,7 +40,7 @@ def extract_fields(line):
     return input_value, status_code, tech_used_str
 
 def update_subdomain_info(col, domain):
-    filename = f'{domain}-json'
+    filename = f'results/{domain}-json'
     if os.path.exists(filename):
         with open(filename, 'r') as f:
             bulk_operations = []

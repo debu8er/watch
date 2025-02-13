@@ -4,6 +4,8 @@ import re
 from database import initialize_mongo_collection
 
 def fetch_subdomains(domain):
+    if not os.path.exists("results") : 
+        os.makedirs("results")
     # Fetch subdomains from different sources
     crtsh_subdomains = fetch_crtsh_subdomains(domain)
     abuseipdb_subdomains = fetch_abuseipdb_subdomains(domain)
@@ -49,7 +51,7 @@ def fetch_abuseipdb_subdomains(domain):
 
 def fetch_subfinder_subdomains(domain):
     try:
-        os.system(f'subfinder -all -d {domain} -silent > {domain}-subfinder')
+        os.system(f'subfinder -all -d {domain} -silent > results/{domain}-subfinder')
 
     except IOError as e:
         print(f"An error occurred during file merging/sorting: {e}")
@@ -59,14 +61,14 @@ def run_alterx_dnsx(domain):
     try:
         collection = initialize_mongo_collection(domain)
 
-        alterx_sub = (f'{domain}-alterx-allsub')
+        alterx_sub = (f'results/{domain}-alterx-allsub')
         result = list(collection.find({}))
 
         if len(result) != 0:
             with open(alterx_sub,'w') as f:
                 for i in collection.find({}):
                     f.writelines(('%s\n' % i["sub"]))
-            command = f"cat {alterx_sub} | alterx -silent | dnsx -silent > {domain}-dnsbrute"
+            command = f"cat {alterx_sub} | alterx -silent | dnsx -silent > results/{domain}-dnsbrute"
             os.system(command)
         
         else:
@@ -93,18 +95,18 @@ def merge_and_sort_files(domain, subfinder, crtabuse, dnsbrute, allsub):
 
 def save_subdomains_to_file(domain, subdomains):
     try:
-        subdomains_file = f'{domain}-crtabuse'
+        subdomains_file = f'results/{domain}-crtabuse'
 
         with open(subdomains_file, 'w') as file:
             file.writelines([subdomain + '\n' for subdomain in subdomains])
 
-        subfinder = f'{domain}-subfinder'
-        crtabuse = f'{domain}-crtabuse'
-        dnsbrute = f'{domain}-dnsbrute'
-        allsub = f'{domain}-allsub'
+        subfinder = f'results/{domain}-subfinder'
+        crtabuse = f'results/{domain}-crtabuse'
+        dnsbrute = f'results/{domain}-dnsbrute'
+        allsub = f'results/{domain}-allsub'
 
         merge_and_sort_files(domain, subfinder, crtabuse, dnsbrute, allsub)
-        os.system(f'httpx -l {domain}-allsub -sc -td -silent -json > {domain}-json')
+        os.system(f'httpx -l {domain}-allsub -sc -td -silent -json > results/{domain}-json')
     except Exception as e:
         print(f"An error occurred: {e}")
 
