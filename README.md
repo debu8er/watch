@@ -1,4 +1,4 @@
-<h1 align="center">watch</h1>2
+<h1 align="center">watch</h1>
 <p align="center">
   <a href="#installation">Installation</a> •
   <a href="#tool-options">Tool options</a> •
