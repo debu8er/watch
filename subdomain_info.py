@@ -7,8 +7,15 @@ from pymongo import MongoClient, UpdateOne, InsertOne
 def add_subdomains_to_mongo(col, domain):
     subdomain_file = f"results/{domain}-allsub"
     if os.path.exists(subdomain_file):
+        send_data_to_telegram(subdomain)
         with open(subdomain_file, 'r') as f:
-            fresh = "ready" if col.count_documents({}) > 0 else False
+
+            # check for fresh
+            if col.count_documents({}) > 0:
+                fresh = "ready"
+                send_data_to_telegram(subdomain)
+            else False            
+
             bulk_operations = []
 
             for subdomain in f:
@@ -25,9 +32,6 @@ def add_subdomains_to_mongo(col, domain):
                         "updatedAt": datetime.utcnow()  # Initialize the updatedAt field
                     }
                     bulk_operations.append(InsertOne(document))
-                    if fresh == "ready":
-                        # send_data_to_discord(subdomain)
-                        send_data_to_telegram(subdomain)
 
             if bulk_operations:
                 col.bulk_write(bulk_operations)

@@ -19,7 +19,7 @@ from subdomain_info import (
 def watch_for_domain(domain, interval, stop_flag):
     while not stop_flag.is_set():
         print(f"Checking subdomains for {domain}")
-        fetch_subdomains(domain)
+        # fetch_subdomains(domain)
 
         mycol = initialize_mongo_collection(domain)
         add_subdomains_to_mongo(mycol, domain)
