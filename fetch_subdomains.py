@@ -106,7 +106,7 @@ def save_subdomains_to_file(domain, subdomains):
         allsub = f'results/{domain}-allsub'
 
         merge_and_sort_files(domain, subfinder, crtabuse, dnsbrute, allsub)
-        os.system(f'httpx -l {domain}-allsub -sc -td -silent -json > results/{domain}-json')
+        os.system(f'httpx -l results/{domain}-allsub -sc -td -silent -json > results/{domain}-json')
     except Exception as e:
         print(f"An error occurred: {e}")
 
