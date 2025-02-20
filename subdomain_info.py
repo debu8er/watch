@@ -9,6 +9,11 @@ def add_subdomains_to_mongo(col, domain):
     if os.path.exists(subdomain_file):
         with open(subdomain_file, 'r') as f:
 
+            if col.count_documents({}) > 0:
+                fresh = False
+            else:
+                fresh = "first"
+
             bulk_operations = []
 
             for subdomain in f:
@@ -18,7 +23,7 @@ def add_subdomains_to_mongo(col, domain):
                         "sub": subdomain,
                         "status": None,
                         "tech": None,
-                        "fresh": False,
+                        "fresh": fresh,
                         "status_changed": False,
                         "tech_changed": False,
                         "createdAt": datetime.utcnow(),
@@ -64,6 +69,7 @@ def update_subdomain_info(col, domain):
                         update_data["updatedAt"] = datetime.utcnow()
                         if existing_subdomain["fresh"] == False:
                             existing_subdomain["fresh"] == "live"
+                            update_data["fresh"] == "live"
                             send_data_to_telegram(query, tech, status)
 
                         bulk_operations.append(

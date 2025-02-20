@@ -8,12 +8,12 @@ def fetch_subdomains(domain):
         os.makedirs("results")
     # Fetch subdomains from different sources
     crtsh_subdomains = fetch_crtsh_subdomains(domain)
-    abuseipdb_subdomains = fetch_abuseipdb_subdomains(domain)
+    # abuseipdb_subdomains = fetch_abuseipdb_subdomains(domain)
     subfinder = fetch_subfinder_subdomains(domain)
     # dnsbrute = fetch_dnsbrute_subdomains(domain)
     
     # Combine subdomains from different sources
-    all_subdomains = crtsh_subdomains + abuseipdb_subdomains
+    all_subdomains = crtsh_subdomains # + abuseipdb_subdomains
     
     # Save all subdomains to a file
     save_subdomains_to_file(domain, all_subdomains)

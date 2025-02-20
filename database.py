@@ -49,10 +49,10 @@ def send_data_to_discord(sub):
         return None
 
 
-def send_data_to_telegram(sub):
+def send_data_to_telegram(sub, tech, status):
     bot_token = TEL_TOKEN
     chat_id = TEL_CHANELL_ID
-    message = f"🚨 New Subdomain Detected:\n`{sub}`"
+    message = f"🚨 New Subdomain Detected:\n🔹 Subdomain: `{sub}`\n🔹 Tech: `{tech}`\n🔹 Status: `{status}`"
 
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     data = {
