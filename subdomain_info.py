@@ -68,8 +68,8 @@ def update_subdomain_info(col, domain):
                     if update_data:
                         update_data["updatedAt"] = datetime.utcnow()
                         if existing_subdomain["fresh"] == False:
-                            existing_subdomain["fresh"] == "live"
-                            update_data["fresh"] == "live"
+                            existing_subdomain["fresh"] = "live"
+                            update_data["fresh"] = "live"
                             send_data_to_telegram(query, tech, status)
 
                         bulk_operations.append(
