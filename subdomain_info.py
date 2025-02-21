@@ -3,7 +3,6 @@ import os
 from datetime import datetime, timedelta
 from database import send_data_to_discord, send_data_to_telegram
 from pymongo import MongoClient, UpdateOne, InsertOne
-s
 
 def add_subdomains_to_mongo(col, domain):
     subdomain_file = f"results/{domain}-allsub"
