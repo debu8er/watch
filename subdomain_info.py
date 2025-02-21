@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 from database import send_data_to_discord, send_data_to_telegram
 from pymongo import MongoClient, UpdateOne, InsertOne
+import test
 
 def add_subdomains_to_mongo(col, domain):
     subdomain_file = f"results/{domain}-allsub"
@@ -29,7 +30,10 @@ def add_subdomains_to_mongo(col, domain):
                         "createdAt": datetime.utcnow(),
                         "updatedAt": datetime.utcnow()  # Initialize the updatedAt field
                     }
+                    print("The Script Start Add data to database")
                     bulk_operations.append(InsertOne(document))
+                    print("The Script Done Add data to database")
+
 
             if bulk_operations:
                 col.bulk_write(bulk_operations)

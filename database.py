@@ -13,8 +13,6 @@ TEL_TOKEN = os.getenv('TEL_TOKEN')
 TEL_CHANELL_ID = os.getenv('TEL_CHANELL_ID')
 
 
-
-
 def initialize_mongo_collection(domain):
     myclient = pymongo.MongoClient(BASE_URL)
     mydb = myclient[MY_DB]
@@ -22,7 +20,7 @@ def initialize_mongo_collection(domain):
     return mycol
 
 def fetch_domains_from_mongodb():
-    client = pymongo.MongoClient("mongodb://localhost:27017/")  # Replace with your MongoDB connection details
+    client = pymongo.MongoClient("mongodb://localhost:27017/", serverSelectionTimeoutMS=5000)  # Replace with your MongoDB connection details
     db = client["mydatabase"]  # Replace with your database name
     domains_collection = db["domains"]  # Replace with your collection name
     domain_names = domains_collection.distinct("domain")
