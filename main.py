@@ -1,5 +1,5 @@
 import threading
-import timer
+import time
 import pymongo
 
 from database import (
