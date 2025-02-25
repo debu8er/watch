@@ -19,7 +19,7 @@ from subdomain_info import (
 def watch_for_domain(domain, interval, stop_flag):
     while not stop_flag.is_set():
         print(f"Checking subdomains for {domain}")
-        # fetch_subdomains(domain)
+        fetch_subdomains(domain)
 
         mycol = initialize_mongo_collection(domain)
         add_subdomains_to_mongo(mycol, domain)
@@ -51,6 +51,7 @@ def main():
 
     while True:
         # Fetch domain names from the 'domains' collection
+        time.sleep(10)
         domains_to_watch = fetch_domains_from_mongodb()
 
         # Determine threads to remove
@@ -72,7 +73,7 @@ def main():
         # Start threads for new domains
         for domain in domains_to_add:
             stop_flag = threading.Event()
-            thread = threading.Thread(target=watch_for_domain, args=(domain, 60, stop_flag))
+            thread = threading.Thread(target=watch_for_domain, args=(domain, 60 * 60, stop_flag))
             thread.daemon = True
             thread.start()
             monitored_domains[domain] = (thread, stop_flag)  # Add the domain, thread, and stop flag to the dictionary
