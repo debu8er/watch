@@ -29,7 +29,10 @@ def add_subdomains_to_mongo(col, domain):
                         "createdAt": datetime.utcnow(),
                         "updatedAt": datetime.utcnow()  # Initialize the updatedAt field
                     }
+                    print("The Script Start Add data to database")
                     bulk_operations.append(InsertOne(document))
+                    print("The Script Done Add data to database")
+
 
             if bulk_operations:
                 col.bulk_write(bulk_operations)
