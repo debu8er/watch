@@ -9,6 +9,9 @@ def fetch_subdomains(domain):
     # Fetch subdomains from subenum
     fetch_subenum_subdomain(domain)
     
+    run_dnsx(domain)
+
+
     # Save all subdomains to a file
     run_httpx(domain)
 
@@ -18,6 +21,15 @@ def fetch_subenum_subdomain(domain):
         print(f"run subenum in {domain}")
         os.system(f'./subenum.sh -d {domain} -o results/{domain}-subenum -e wayback,abuseipdb,Amass')
         print(f"done subdomain discovery from {domain}")
+    except IOError as e:
+        print(f"An error occurred during file merging/sorting: {e}")
+
+
+def run_dnsx(domain):
+    try:
+        print(f"run dnsx in {domain}")
+        os.system(f'dnsx -silent -l results/{domain}-subenum > results/{domain}-dnsx')
+        print(f"done dnsx from {domain}")
     except IOError as e:
         print(f"An error occurred during file merging/sorting: {e}")
 
@@ -111,8 +123,7 @@ def run_httpx(domain):
 
         # merge_and_sort_files(domain, subfinder, crtabuse, dnsbrute, allsub)
         print(f"run httpx in {domain}")
-        os.system(f'httpx -l results/{domain}-subenum -sc -td -silent -json > results/{domain}-json')
+        os.system(f'httpx -l results/{domain}-dnsx -sc -td -silent -json > results/{domain}-json')
         print(f"done httpx from {domain}")
     except Exception as e:
         print(f"An error occurred: {e}")
-
