@@ -3,17 +3,31 @@ import requests
 import re
 from database import initialize_mongo_collection
 
-def fetch_subdomains(domain):
+def fetch_subdomains(domain,active):
     if not os.path.exists("results") : 
         os.makedirs("results")
     # Fetch subdomains from subenum
     fetch_subenum_subdomain(domain)
+
+    if active :
+        run_dnsgen(domain)
     
-    run_dnsx(domain)
+
+    run_dnsx(domain,active)
 
 
     # Save all subdomains to a file
     run_httpx(domain)
+
+
+#todo
+def run_dnsgen(domain):
+    try:
+        print(f"run dnsgen in {domain}")
+        os.system(f'cat results/{domain}-subenum | dnsgen - > results/{domain}-dnsgen')
+        print(f"done dnsgen from {domain}")
+    except IOError as e:
+        print(f"An error occurred during file merging/sorting: {e}")
 
 
 def fetch_subenum_subdomain(domain):
@@ -25,10 +39,15 @@ def fetch_subenum_subdomain(domain):
         print(f"An error occurred during file merging/sorting: {e}")
 
 
-def run_dnsx(domain):
+def run_dnsx(domain,active):
     try:
         print(f"run dnsx in {domain}")
-        os.system(f'dnsx -silent -l results/{domain}-subenum > results/{domain}-dnsx')
+
+        if active :
+            os.system(f'dnsx -silent -l results/{domain}-dnsgen > results/{domain}-dnsx')
+        else :
+            os.system(f'dnsx -silent -l results/{domain}-subenum > results/{domain}-dnsx')
+
         print(f"done dnsx from {domain}")
     except IOError as e:
         print(f"An error occurred during file merging/sorting: {e}")

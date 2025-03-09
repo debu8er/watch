@@ -9,9 +9,9 @@ from subdomain_info import (
     update_subdomain_info,
 )
 
-def process_domain(domain):
+def process_domain(domain,active):
     print(f"Checking subdomains for {domain}")
-    fetch_subdomains(domain)
+    fetch_subdomains(domain,active)
     
     mycol = initialize_mongo_collection(domain)
     add_subdomains_to_mongo(mycol, domain)
@@ -22,7 +22,7 @@ def main():
     while True:
         domains_to_watch = fetch_domains_from_mongodb()
         for domain in domains_to_watch:
-            process_domain(domain)
+            process_domain(domain["domain"],domain["active"])
         print("Sleeping for 1 min...")
         time.sleep(60)
 

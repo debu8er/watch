@@ -23,9 +23,16 @@ def fetch_domains_from_mongodb():
     client = pymongo.MongoClient("mongodb://localhost:27017/", serverSelectionTimeoutMS=5000)  # Replace with your MongoDB connection details
     db = client["mydatabase"]  # Replace with your database name
     domains_collection = db["domains"]  # Replace with your collection name
-    domain_names = domains_collection.distinct("domain")
+    
+    domains = []
+    for doc in domains_collection.find({}, {"domain": 1, "active": 1}):
+        domains.append({
+            "domain": doc.get("domain"),
+            "active": doc.get("active", False)  # Default to False if 'active' field is missing
+        })
+    
     client.close()
-    return domain_names
+    return domains
 
 def send_data_to_discord(sub):
     webhook_url = WEBHOOK_URL
