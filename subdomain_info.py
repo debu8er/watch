@@ -83,9 +83,9 @@ def update_subdomain_info(col, domain):
             if bulk_operations:
                 col.bulk_write(bulk_operations)
 
-def set_stale_subdomains(col, field_name):
-    two_days_ago = datetime.utcnow() - timedelta(days=2)
-    col.update_many(
-        {field_name: {"$ne": False}, "updatedAt": {"$lt": two_days_ago}},
-        {"$set": {field_name: False}}
-    )
+# def set_stale_subdomains(col, field_name):
+#     two_days_ago = datetime.utcnow() - timedelta(days=2)
+#     col.update_many(
+#         {field_name: {"$ne": False}, "updatedAt": {"$lt": two_days_ago}},
+#         {"$set": {field_name: False}}
+#     )
