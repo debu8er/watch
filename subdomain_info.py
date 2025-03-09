@@ -29,7 +29,10 @@ def add_subdomains_to_mongo(col, domain):
                         "createdAt": datetime.utcnow(),
                         "updatedAt": datetime.utcnow()  # Initialize the updatedAt field
                     }
+                    print("The Script Start Add data to database")
                     bulk_operations.append(InsertOne(document))
+                    print("The Script Done Add data to database")
+
 
             if bulk_operations:
                 col.bulk_write(bulk_operations)
@@ -49,8 +52,8 @@ def update_subdomain_info(col, domain):
             bulk_operations = []
 
             for line in f:
-                query, status, tech = extract_fields(line)
-                existing_subdomain = col.find_one({"sub": query})
+                sub, status, tech = extract_fields(line)
+                existing_subdomain = col.find_one({"sub": sub})
 
                 if existing_subdomain:
                     existing_status = existing_subdomain["status"]
@@ -68,12 +71,13 @@ def update_subdomain_info(col, domain):
                     if update_data:
                         update_data["updatedAt"] = datetime.utcnow()
                         if existing_subdomain["fresh"] == False:
-                            existing_subdomain["fresh"] = "live"
-                            update_data["fresh"] = "live"
-                            send_data_to_telegram(query, tech, status)
+                            if status == 200 or status == "200" :
+                                existing_subdomain["fresh"] = "live"
+                                update_data["fresh"] = "live"
+                                send_data_to_telegram(sub, tech, status)
 
                         bulk_operations.append(
-                            UpdateOne({"sub": query}, {"$set": update_data})
+                            UpdateOne({"sub": sub}, {"$set": update_data})
                         )
 
             if bulk_operations:

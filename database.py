@@ -13,8 +13,6 @@ TEL_TOKEN = os.getenv('TEL_TOKEN')
 TEL_CHANELL_ID = os.getenv('TEL_CHANELL_ID')
 
 
-
-
 def initialize_mongo_collection(domain):
     myclient = pymongo.MongoClient(BASE_URL)
     mydb = myclient[MY_DB]
@@ -22,7 +20,7 @@ def initialize_mongo_collection(domain):
     return mycol
 
 def fetch_domains_from_mongodb():
-    client = pymongo.MongoClient("mongodb://localhost:27017/")  # Replace with your MongoDB connection details
+    client = pymongo.MongoClient("mongodb://localhost:27017/", serverSelectionTimeoutMS=5000)  # Replace with your MongoDB connection details
     db = client["mydatabase"]  # Replace with your database name
     domains_collection = db["domains"]  # Replace with your collection name
     domain_names = domains_collection.distinct("domain")
@@ -52,7 +50,21 @@ def send_data_to_discord(sub):
 def send_data_to_telegram(sub, tech, status):
     bot_token = TEL_TOKEN
     chat_id = TEL_CHANELL_ID
-    message = f"🚨 New Subdomain Detected:\n🔹 Subdomain: `{sub}`\n🔹 Tech: `{tech}`\n🔹 Status: `{status}`"
+
+    # انتخاب آیکون بر اساس status code
+    if 200 <= status < 300:
+        status_icon = "🟢"
+    elif 300 <= status < 400:
+        status_icon = "🟡"
+    else:
+        status_icon = "🔴"
+
+    message = (
+        f"🚨 New Subdomain Detected:\n"
+        f"🔹 Subdomain: {sub}\n"
+        f"🔹 Tech: {tech}\n"
+        f"🔹 Status: {status_icon} {status}"
+    )
 
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     data = {
@@ -60,8 +72,9 @@ def send_data_to_telegram(sub, tech, status):
         "text": message,
         "parse_mode": "Markdown",
     }
-    
+
     try:
         response = requests.post(url, json=data)
-    except Exception as e:
+        response.raise_for_status()  # بررسی موفقیت درخواست
+    except requests.exceptions.RequestException as e:
         print(f"Error sending message to Telegram: {e}")

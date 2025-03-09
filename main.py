@@ -51,6 +51,8 @@ def main():
 
     while True:
         # Fetch domain names from the 'domains' collection
+        time.sleep(10)
+        
         domains_to_watch = fetch_domains_from_mongodb()
 
         # Determine threads to remove
