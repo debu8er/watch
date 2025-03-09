@@ -16,7 +16,7 @@ def fetch_subdomains(domain):
 def fetch_subenum_subdomain(domain):
     try:
         print(f"run subenum in {domain}")
-        os.system(f'./subenum.sh -d {domain} -o results/{domain}-subenum -e wayback,abuseipdb,Amass,bufferover')
+        os.system(f'./subenum.sh -d {domain} -o results/{domain}-subenum -e wayback,abuseipdb,Amass')
         print(f"done subdomain discovery from {domain}")
     except IOError as e:
         print(f"An error occurred during file merging/sorting: {e}")
