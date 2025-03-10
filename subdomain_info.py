@@ -5,7 +5,7 @@ from database import send_data_to_discord, send_data_to_telegram
 from pymongo import MongoClient, UpdateOne, InsertOne
 
 def add_subdomains_to_mongo(col, domain):
-    subdomain_file = f"results/{domain}-allsub"
+    subdomain_file = f"results/{domain}-dnsx"
     if os.path.exists(subdomain_file):
         with open(subdomain_file, 'r') as f:
 
