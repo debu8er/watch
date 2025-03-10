@@ -21,7 +21,7 @@ def initialize_mongo_collection(domain):
 
 def fetch_domains_from_mongodb():
     client = pymongo.MongoClient("mongodb://localhost:27017/", serverSelectionTimeoutMS=5000)  # Replace with your MongoDB connection details
-    db = client["mydatabase"]  # Replace with your database name
+    db = client[MY_DB]  # Replace with your database name
     domains_collection = db["domains"]  # Replace with your collection name
     
     domains = []

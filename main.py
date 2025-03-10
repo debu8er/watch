@@ -12,9 +12,13 @@ from subdomain_info import (
 def process_domain(domain,active):
     print(f"Checking subdomains for {domain}")
     fetch_subdomains(domain,active)
-    
+
+
+    print("initialize_mongo_collection")
     mycol = initialize_mongo_collection(domain)
+    print("add_subdomains_to_mongo")
     add_subdomains_to_mongo(mycol, domain)
+    print("update_subdomain_info")
     update_subdomain_info(mycol, domain)
     
 
